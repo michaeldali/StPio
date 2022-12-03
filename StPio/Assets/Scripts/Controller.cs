@@ -10,6 +10,8 @@ public class Controller : MonoBehaviour
     [SerializeField] private float speed = 10f;
     private float canJump = 0f;
     private float horizontalMove = 0f;
+    
+    
 
     private Animator anim;
 
@@ -19,6 +21,7 @@ public class Controller : MonoBehaviour
         circleCollider = this.GetComponent<CircleCollider2D>();
         body = this.GetComponent<Rigidbody2D>();
         anim = this.GetComponent<Animator>();
+        
     }
 
     // Update is called once per frame
