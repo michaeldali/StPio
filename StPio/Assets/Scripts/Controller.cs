@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class Controller : MonoBehaviour
 {
@@ -14,10 +16,12 @@ public class Controller : MonoBehaviour
     private float nextAttackTime = 0f;
     private float canJump = 0f;
     private float horizontalMove = 0f;
+    public float jumpRate = 1f;
     private Animator anim;
     public Transform attackPoint;
     public float attackRange = 0.5f;
     public LayerMask enemyLayers;
+    public Image[] scrollTexts;
 
 
     // Start is called before the first frame update
@@ -40,11 +44,11 @@ public class Controller : MonoBehaviour
 
         anim.SetBool("IsGrounded", isGrounded());
         // Checks if player can jump
-        if (Input.GetButton("Jump") && isGrounded() && Time.time > canJump)
+        if (Input.GetButtonDown("Jump") && isGrounded() && Time.time > canJump)
         {
             body.velocity = new Vector2(body.velocity.x, jumpPower*1.5f);
             anim.SetBool("IsGrounded", isGrounded());
-            canJump = Time.time + 1f;
+            canJump = Time.time + jumpRate;
         }
 
         // Moves player left and right
@@ -58,14 +62,30 @@ public class Controller : MonoBehaviour
         }
 
         // Attack logic
-        if (Time.time >= nextAttackTime)
+        if (Time.time >= nextAttackTime && Input.GetKeyDown(KeyCode.Mouse0))
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                Attack();
-                nextAttackTime = Time.time + 1f / attackRate;
-            }
+            // Attack animation
+            anim.SetTrigger("Attack");
+            nextAttackTime = Time.time + 1f / attackRate;
         }
+
+        // Pause game and exit scroll text UI
+        if (ScrollCounterScript.scrollAmount == 0)
+        {
+            
+        } else 
+        {
+            if (scrollTexts[ScrollCounterScript.scrollAmount-1].enabled == true)
+            {
+                Time.timeScale = 0f;
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    scrollTexts[ScrollCounterScript.scrollAmount-1].enabled = false;
+                    Time.timeScale = 1f;
+                }
+            }          
+        }
+        
     }
     private bool isGrounded(){
         // Sends raycast from center of box collider
@@ -74,8 +94,7 @@ public class Controller : MonoBehaviour
     }
 
     private void Attack(){
-        // Attack animation
-        anim.SetTrigger("Attack");
+
         // Detect enemies in range of attack
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         // Damage enemies
