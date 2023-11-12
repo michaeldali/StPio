@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public static bool IsPaused = false;
+    public bool IsPaused = false;
 
     public GameObject pauseMenuUI;
 
@@ -25,8 +25,8 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Quit!");
-        Application.Quit();
+        SceneManager.LoadScene("MainMenu");
+        ScrollCounterScript.scrollAmount = 0;
     }
 
     public void Resume ()
@@ -40,6 +40,7 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
+        Debug.Log(Time.timeScale);
         IsPaused = true;
     }
 }
